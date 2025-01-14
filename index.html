@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <h1>WebSocket Chat</h1>
+        <section id="messages" style="height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 0.5rem;"></section>
+        <form id="chatForm">
+            <input type="text" id="messageInput" placeholder="Nachricht eingeben" required>
+            <button type="submit">Senden</button>
+        </form>
+    </main>
+
+    <script>
+        const ws = new WebSocket(`ws://${location.host}`);
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const chatForm = document.getElementById('chatForm');
+
+        ws.onmessage = async (event) => {
+          event.data.text().then((message) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          });
+        };
+
+        chatForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const message = messageInput.value;
+          ws.send(message);
+          messageInput.value = '';
+        });
+      </script>
+</body>
+</html>
